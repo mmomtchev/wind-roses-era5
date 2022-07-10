@@ -37,7 +37,9 @@ node grib2csv.js fichier.grib fichier.csv
 
 L'erreur `ERROR: Ran out of file reading SECT0` est normale, le fichier ECMWF n'est pas tout à fait aux normes.
 
-Cette moulinette va produire un fichier CSV dans lequel le vent sera représenté avec une vitesse (en m/s) et une direction géographique (0° à 359°) - la façon dont la plupart des gens ont l'habitude d'utiliser.
+Cette moulinette va produire un fichier CSV dans lequel le vent sera représenté avec une vitesse (en m/s) et une direction géographique (0° à 359°) - la façon dont la plupart des gens ont l'habitude d'utiliser. Elle fonctionne uniquement avec les fichiers d'un seul pixel.
+
+Si vous voulez concaténez deux fichiers CSV, ils se combinent très facilement, il faut juste enlever la ligne d'en-tête du deuxième et le placer après le premier.
 
 **Vous pouvez importer ce fichier dans Excel ou Google Sheets.**
 
