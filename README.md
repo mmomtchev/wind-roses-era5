@@ -23,6 +23,8 @@ Vous allez obtenir un fichier au format GRIB - qui est très mal adapté à une 
 
 Pour le vent, il faudra demander à la fois les composantes `U` et `V` - c'est la façon dont on représente le vent dans le monde professionnel de la météo.
 
+Afin d'être sûr d'avoir un seul pixel, limitez la zone géographique à 1/100 d'un degré - par exemple pour la Forclaz donnez: 45.81 au Nord, 6.25 à Est, 45.80 au Sud et 6.24 à l'Ouest.
+
 # Convertir les données en CSV
 
 Lancer `npm install` dans le répertoire du projet pour installer les dépendances.
