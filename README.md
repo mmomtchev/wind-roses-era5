@@ -1,70 +1,58 @@
-# Getting Started with Create React App
+# Tuto pour faire une étude de l'évolution de la rose des vents d'un endroit
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+*Prérequis: Node.js sur Windows / macOS / Linux*
 
-## Available Scripts
+*Public: L'utilisateur averti qui n'est pas un informaticien professionnel*
+## Récupérer les données ERA5
 
-In the project directory, you can run:
+Les données ERA5, qui remontent jusqu'au 1959, sont le résultat d'une réanalyse moderne avec un algorithme d'assimilation similaire à ceux qui sont utilisés pour initialiser un modèle météo. Le jeu de données est considéré comme le meilleur jeu de données climatiques au monde et il est diffusé gratuitement par l'ECMWF à toute personne qui en fait la demande.
 
-### `npm start`
+Aller sur:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+https://cds.climate.copernicus.eu/#!/search?text=ERA5&type=dataset
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Et choisissez les données de la réanalyse heure par heure sur niveaux de pression:
 
-### `npm test`
+https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels?tab=overview
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+ERA5 impose une limite sur la quantité de données que vous pouvez demander en une seule fois - en gros c'est soit toute la France à un moment donné, soit un seul pixel sur 60 ans. Si vous voulez plus, il faudra faire plusieurs demandes.
 
-### `npm run build`
+Les demandes sont traitées sur une liste d'attente - ma première demande a été rejetée au bout d'une semaine d'attente, puis la deuxième fois je l'ai envoyé un samedi soir du mois de juillet - et en 1h30 j'ai eu un email comme quoi les données était prêtes pour téléchargement.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Vous allez obtenir un fichier au format GRIB - qui est très mal adapté à une telle demande puisqu'il va contenir 20000 calques d'un seul pixel.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Pour le vent, il faudra demander à la fois les composantes `U` et `V` - c'est la façon dont on représente le vent dans le monde professionnel de la météo.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Convertir les données en CSV
 
-### `npm run eject`
+Lancer `npm install` dans le répertoire du projet pour installer les dépendances.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Lancer ensuite ma moulinette qui utilise mon framework pour JS dont je suis particulièrement fier - `gdal-async` qui est également à la base du moteur de velivole.fr:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+node grib2csv.js fichier.grib fichier.csv
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+L'erreur `ERROR: Ran out of file reading SECT0` est normale, le fichier ECMWF n'est pas tout à fait aux normes.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Cette moulinette va produire un fichier CSV dans lequel le vent sera représenté avec une vitesse (en m/s) et une direction géographique (0° à 359°) - la façon dont la plupart des gens ont l'habitude d'utiliser.
 
-## Learn More
+**Vous pouvez importer ce fichier dans Excel ou Google Sheets.**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Faire une page avec des roses de vent
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Si vous voulez faire une page comme celle sur https://velivole.fr/Forclaz, ouvrez le fichier `src/App.js` et remplacer le `fichier.csv` avec le nom de votre fichier. Copiez ce même fichier CSV dans `public` et lancez:
 
-### Code Splitting
+```
+npm run start
+````
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Ceci lancera votre navigateur web et affichera la page en local.
 
-### Analyzing the Bundle Size
+Si vous voulez l'héberger sur un vrai serveur Web, lancez
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+npm run build
+````
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+puis copiez les données du dossier `build` à la racine de votre serveur web.
